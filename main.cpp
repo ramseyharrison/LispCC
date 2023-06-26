@@ -28,12 +28,19 @@ SLists getArgs (SList l) {
     return args;
 }
 
+
+SList evaluate_sequence(SList s,Environment* env,int offset){
+  auto sl = s.getList().begin()+offset;
+  for(sl;sl != s.getList().end()-1;++sl)
+    evaluate(*sl,env);
+   return evaluate(s.getList()[s.getList().size()-1],env);
+}
+
 SList dispatch_procedure(SList p, SLists args, Environment* env)
-{
+{      
       if (p.getType() == SList::LAMBDA) {
-	cout << p.listToString() << endl;
-	return evaluate(p.getList()[2],
-			new Environment(p.getList()[1].getList(),args,env));
+	Environment* new_env = new Environment(p.getList()[1].getList(),args,env);
+	return evaluate_sequence(p,new_env,2);		
       } else if (p.getType()==SList::PROC) {
 	return p.getProc()(args);
       } else if (p.getType() == SList::PROC_ENV) {
@@ -44,7 +51,7 @@ SList dispatch_procedure(SList p, SLists args, Environment* env)
       }
 }
 SList evaluate (SList s, Environment* env) {
-    if (s.getType() == SList::SYMBOL) {             //variable reference
+  if (s.getType() == SList::SYMBOL) {             //variable reference
         if (s.val()[0] == '\'')
             return SList(s.val().substr(1,s.val().length()-1));
         return (*(env->find(s.val())))[s.val()];
@@ -65,9 +72,8 @@ SList evaluate (SList s, Environment* env) {
     } else if (s.getList()[0].val() == "if") {
         return evaluate(s.getList()[1],env).val()!="#f" ? evaluate(s.getList()[2],env) : evaluate(s.getList()[3],env);
     } else if (s.getList()[0].val() == "begin") {
-        for (int i = 1; i < s.getList().size()-1; i++) evaluate(s.getList()[i], env);
-        return evaluate(s.getList()[s.getList().size()-1],env);
-	
+    return evaluate_sequence(s,env,1);
+       
     } else {            //procedure call
       SList p = evaluate(s.getList()[0],env);
       SLists args = getArgs(s);

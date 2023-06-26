@@ -12,7 +12,7 @@
 #include "SList.hpp"
 #include "stdlib.h"
 #include "math.h"
-
+#include <limits>
 //primitives
 SList add (const SLists& arg);
 SList subtract (const SLists& arg);
@@ -36,8 +36,8 @@ SList greater_than(const SLists& argv);
 SList less_than (const SLists& argv);
 SList equal_num (const SLists& argv);
 SList append (const SLists& argv);
-SList apply (const SLists& argv);
-SList map (const SLists& argv);
+SList apply (const SLists& argv, Environment* env);
+SList map (const SLists& argv, Environment* env);
 SList max (const SLists& argv);
 SList max (const SLists& argv);
 SList eqv (const SLists& argv);

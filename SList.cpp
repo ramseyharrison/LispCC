@@ -14,6 +14,7 @@ SList::SList(std::string s) : value(s), type (SYMBOL) {}
 SList::SList(double s) : value(std::to_string(s)), type(NUMBER) {}
 SList::SList(SLists s) : list(s), type(LIST) {}
 SList::SList(proc s) : p(s) , type(PROC) {}
+SList::SList(proc_env s) : pe(s), type(PROC_ENV) {}
 
 bool double_is_int(std::string dVal) {
     double trouble = atof(dVal.c_str());
@@ -26,6 +27,10 @@ std::string double_to_int(std::string dVal) {
 
 void SList::setType (sType t) {
     type = t;
+}
+
+void SList::setEnv(Environment* env){
+  env = env;
 }
 
 void SList::push(SList s) {
@@ -41,11 +46,16 @@ SList::sType SList::getType() const {
     return type;
 }
 
+Environment* SList::getEnv() const{
+  return env;
+}
+
 std::string SList::getTypeString() const {
     if (type == SYMBOL) return "SYMBOL";
     else if (type == NUMBER) return "NUMBER";
     else if (type == LIST) return "LIST";
     else if (type == PROC) return "PROC";
+    else if (type == PROC) return "PROC_ENV";
     else return "LAMBDA";
 }
 
@@ -55,6 +65,10 @@ SLists SList::getList () const {
 
 SList::proc SList::getProc() const {
     return p;
+}
+
+SList::proc_env SList::getProcEnv() const {
+    return pe;
 }
 
 std::string SList::val() const {return value;}

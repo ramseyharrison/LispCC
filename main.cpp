@@ -17,6 +17,7 @@
 
 using namespace std;
 
+SList evaluate(SList s, Environment* env);
 
 SLists getArgs (SList l) {
     SLists unproc_args = l.getList();
@@ -27,6 +28,20 @@ SLists getArgs (SList l) {
     return args;
 }
 
+SList dispatch_procedure(SList p, SLists args, Environment* env)
+{
+      if (p.getType() == SList::LAMBDA) {
+	return evaluate(p.getList()[2],
+			new Environment(p.getList()[1].getList(),args,env));
+      } else if (p.getType()==SList::PROC) {
+	return p.getProc()(args);
+      } else if (p.getType() == SList::PROC_ENV) {
+	return p.getProcEnv()(args,env);
+      }
+      else {
+	return evaluate(p,env);
+      }
+}
 SList evaluate (SList s, Environment* env) {
     if (s.getType() == SList::SYMBOL) {             //variable reference
         if (s.val()[0] == '\'')
@@ -52,17 +67,12 @@ SList evaluate (SList s, Environment* env) {
         for (int i = 1; i < s.getList().size()-1; i++) evaluate(s.getList()[i], env);
         return evaluate(s.getList()[s.getList().size()-1],env);
     } else {            //procedure call
-        SList p = evaluate(s.getList()[0],env);
-        SLists args = getArgs(s);
-        for (int i = 0; i < args.size(); i++)
-            args[i] = evaluate (args[i],env);
-        if (p.getType() == SList::LAMBDA) {
-            return evaluate(p.getList()[2], new Environment(p.getList()[1].getList(),args,env));
-        } else if (p.getType()==SList::PROC) {
-            return p.getProc()(args);
-        } else {
-            return evaluate(p,env);
-        }
+      cout << "dealing with a procedure call" << endl;
+      SList p = evaluate(s.getList()[0],env);
+      SLists args = getArgs(s);
+      for (int i = 0; i < args.size(); i++)
+	args[i] = evaluate (args[i],env);
+      return dispatch_procedure(p,args,env);    
     }
 }
 
@@ -116,7 +126,6 @@ int main(int argc, const char * argv[]) {
             std::cout << "schm/> ";
             std::string line = FormattedIO::readLine();
             if (line.length()==0) continue;
-            //std::cout << line << std::endl;
             temp = evaluate(Parser::parse(line), std_env);
         } catch (const char* msg) {
             cerr << msg << endl;
@@ -125,7 +134,6 @@ int main(int argc, const char * argv[]) {
             cerr << "Interpreter Error: Unhandled Exception" << endl;
             continue;
         }
-        //cout << "(dev msg) " << temp.getTypeString() << endl;
         cout << "=> " << temp.getPrintString() << endl;
             
     }

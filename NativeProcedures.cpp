@@ -8,6 +8,9 @@
 
 #include "NativeProcedures.hpp"
 
+SList dispatch_procedure(SList, SLists, Environment*);
+SList evaluate(SList, Environment*);
+
 SList add (const SLists& argv)  {
     double dVal = atof(argv[0].val().c_str());
     for (auto vi = argv.begin()+1; vi != argv.end(); vi++)
@@ -125,21 +128,23 @@ SList append (const SLists& argv) {
     return SList(l);
 }
 
-SList apply (const SLists& argv) {
-    return argv[0].getProc()(argv[1].getList());
+SList apply (const SLists& argv, Environment* env) {
+    SList p = evaluate(argv[0],env);
+    SLists args = argv[1].getList();
+    return dispatch_procedure(p,args,env);
 }
 
-SList map (const SLists& argv) {
+SList map (const SLists& argv, Environment* env){    
     SList newList(SList::LIST);
     for (int i = 0; i < argv[1].getList().size(); i++) {
         SLists n;
         SList args(SList::LIST);
-        n.push_back(argv[0].getProc());
+        n.push_back(argv[0]);
         for (int j = 1; j < argv.size(); j++) {
             args.push(argv[j].getList()[i]);
         }
         n.push_back(args);
-        newList.push(apply(n));
+        newList.push(apply(n,env));
     }
     return newList;
 }

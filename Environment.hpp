@@ -23,7 +23,6 @@ public:
     envType env;
     
 private:
-    
-    Environment* outerEnv;
+  Environment* outerEnv;
 };
 #endif /* Environment_hpp */

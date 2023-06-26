@@ -67,7 +67,6 @@ SList evaluate (SList s, Environment* env) {
         for (int i = 1; i < s.getList().size()-1; i++) evaluate(s.getList()[i], env);
         return evaluate(s.getList()[s.getList().size()-1],env);
     } else {            //procedure call
-      cout << "dealing with a procedure call" << endl;
       SList p = evaluate(s.getList()[0],env);
       SLists args = getArgs(s);
       for (int i = 0; i < args.size(); i++)

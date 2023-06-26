@@ -63,7 +63,7 @@ SList evaluate (SList s, Environment* env) {
         (*(env->find(s.getList()[1].val())))[s.getList()[1].val()] = evaluate(s.getList()[2],env);
         return SList();
     } else if (s.getList()[0].val() == "if") {
-        return evaluate(s.getList()[1],env).val()=="#t" ? evaluate(s.getList()[2],env) : evaluate(s.getList()[3],env);
+        return evaluate(s.getList()[1],env).val()!="#f" ? evaluate(s.getList()[2],env) : evaluate(s.getList()[3],env);
     } else if (s.getList()[0].val() == "begin") {
         for (int i = 1; i < s.getList().size()-1; i++) evaluate(s.getList()[i], env);
         return evaluate(s.getList()[s.getList().size()-1],env);

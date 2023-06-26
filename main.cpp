@@ -66,6 +66,7 @@ SList evaluate (SList s, Environment* env) {
     } else if (s.getList()[0].val() == "begin") {
         for (int i = 1; i < s.getList().size()-1; i++) evaluate(s.getList()[i], env);
         return evaluate(s.getList()[s.getList().size()-1],env);
+	
     } else {            //procedure call
       SList p = evaluate(s.getList()[0],env);
       SLists args = getArgs(s);
